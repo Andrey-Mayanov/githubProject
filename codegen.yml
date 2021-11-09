@@ -1,0 +1,7 @@
+generates:
+  ./src/types/repository.ts:
+    schema: указать тут адрес схемы(посмотреть, есть ли такая возможность при интеграции апи)
+    documents: "src/api/**/*.ts"
+    plugins:
+      - typescript
+      - typescript-operations
