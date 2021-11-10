@@ -4,11 +4,43 @@ import "antd/dist/antd.css";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  HttpLink,
+  from,
+} from "@apollo/client";
+import { onError } from "@apollo/client/link/error";
+
+const GITHUB_BASE_URL = "https://api.github.com/graphql";
+
+const httpLink = new HttpLink({
+  uri: GITHUB_BASE_URL,
+  headers: {
+    authorization: `Bearer ${process.env.REACT_APP_GITHUB_PERSONAL_ACCESS_TOKEN}`,
+  },
+});
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.map(({ message, locations, path }) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+  }
+
+  if (networkError) {
+    console.log(`[Network error]: ${networkError}`);
+  }
+});
+
+const cache = new InMemoryCache();
 
 const client = new ApolloClient({
-  uri: "https://api.github.com/graphql",
-  cache: new InMemoryCache(),
+  link: from([errorLink, httpLink]),
+  cache,
 });
 
 ReactDOM.render(
