@@ -1,3 +1,16 @@
 import { gql } from "@apollo/client";
 
-const GET_REPOSITORIES = gql``;
+// или .graphql
+export const GET_REPOSITORIES_BY_NAME = gql`
+  query searchRepositories($query: String!) {
+    search(query: $query, type: REPOSITORY, first: 10) {
+      nodes {
+        ... on Repository {
+          id
+          name
+          description
+        }
+      }
+    }
+  }
+`;

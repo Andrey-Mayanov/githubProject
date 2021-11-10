@@ -1,7 +1,9 @@
 generates:
   ./src/types/repository.ts:
-    schema: https://api.github.com/graphql
+    schema:
+      - https://api.github.com/graphql:
+          headers:
+            Authorization: Bearer ${REACT_APP_GITHUB_PERSONAL_ACCESS_TOKEN}
     documents: "src/api/**/*.ts"
     plugins:
       - typescript
-      - typescript-operations

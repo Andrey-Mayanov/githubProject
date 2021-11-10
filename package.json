@@ -33,7 +33,7 @@
     "format": "npx prettier --write .",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
-    "generate": "graphql-codegen"
+    "generate": "graphql-codegen -r dotenv/config"
   },
   "eslintConfig": {
     "extends": [
