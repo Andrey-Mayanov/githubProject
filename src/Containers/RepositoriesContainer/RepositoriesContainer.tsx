@@ -1,53 +1,49 @@
 import React, { useEffect, useState } from "react";
-import MyInput from "Components/MyInput";
 import { GET_REPOSITORIES_BY_NAME } from "api/queries/repository";
 import { useLazyQuery } from "@apollo/client";
-import ListWrapper, { ListWrapperProps } from "Components/ListWrapper";
-import { List } from "antd";
+import ListWrapper from "components/ListWrapper";
+import { Input, Space } from "antd";
+import styled from "styled-components";
+import useDebounce from "hooks/useDebounce";
 
-const renderList = (loading: Boolean, data: Array<ListWrapperProps>) => {
-  if (loading) {
-    return <List loading />;
-  }
-  if (data.length === 0) {
-    return null;
-  }
-  return <ListWrapper data={data} />;
-};
+const StyledSpace = styled(Space)`
+  width: 100%;
+`;
 
-// разделить
 const RepositoriesContainer = () => {
-  const [isTyping, setIsTyping] = useState(false);
-  const [inputValue, setInputValue] = useState("");
+  const [isTyping, setIsTyping] = useState<boolean>(false);
+  const [inputValue, setInputValue] = useState<string>("");
   const [getRepositories, { loading, data }] = useLazyQuery(
     GET_REPOSITORIES_BY_NAME
   );
-  const [repositories, setRepositories] = useState([]);
 
-  // подумать о первой загрузке
+  const debouncedInputValue = useDebounce(inputValue, 1000);
+
   useEffect(() => {
-    if (!isTyping && !loading) {
+    if (debouncedInputValue) {
       getRepositories({
         variables: {
-          query: inputValue,
+          query: debouncedInputValue,
         },
       });
     }
-  }, [isTyping, inputValue, loading, getRepositories]);
-
-  useEffect(() => setRepositories(data?.search.nodes || []), [data]);
+    setIsTyping(false);
+  }, [debouncedInputValue, getRepositories]);
 
   return (
-    <>
-      <MyInput
-        setIsTyping={setIsTyping}
-        value={inputValue}
-        setValue={setInputValue}
+    <StyledSpace direction="vertical">
+      <Input
+        onChange={(event) => {
+          setIsTyping(true);
+          setInputValue(event.target.value);
+        }}
         placeholder="Введите название репозитория"
       />
-      {/* {renderList(loading || isTyping, data?.search.nodes)} */}
-      {renderList(loading || isTyping, repositories)}
-    </>
+      <ListWrapper
+        isLoading={loading || isTyping}
+        data={data?.search.nodes || []}
+      />
+    </StyledSpace>
   );
 };
 

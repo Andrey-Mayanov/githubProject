@@ -1,4 +1,3 @@
-import ListWrapper, { ListWrapperProps } from "./ListWrapper";
+import ListWrapper from "./ListWrapper";
 
-export type { ListWrapperProps };
 export default ListWrapper;
