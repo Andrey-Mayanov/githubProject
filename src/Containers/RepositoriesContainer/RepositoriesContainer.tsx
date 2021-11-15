@@ -17,6 +17,8 @@ const ToRightDiv = styled.div`
   justify-content: end;
 `;
 
+const PAGE_SIZE = 10;
+
 const RepositoriesContainer = () => {
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
@@ -59,7 +61,7 @@ const RepositoriesContainer = () => {
       .then(() => {
         getRepositoriesByOptions({
           query: inputValue,
-          first: 10,
+          first: PAGE_SIZE,
         });
       })
       .catch((error) => {
@@ -73,7 +75,7 @@ const RepositoriesContainer = () => {
     if (debouncedInputValue) {
       getRepositoriesByOptions({
         query: debouncedInputValue,
-        first: 10,
+        first: PAGE_SIZE,
       });
     }
     setIsTyping(false);
@@ -83,7 +85,7 @@ const RepositoriesContainer = () => {
     getRepositoriesByOptions({
       query: debouncedInputValue,
       before: data?.search.pageInfo.startCursor,
-      last: 10,
+      last: PAGE_SIZE,
     });
   };
 
@@ -91,7 +93,7 @@ const RepositoriesContainer = () => {
     getRepositoriesByOptions({
       query: debouncedInputValue,
       after: data?.search.pageInfo.endCursor,
-      first: 10,
+      first: PAGE_SIZE,
     });
   };
 
