@@ -40,6 +40,7 @@ const RepositoriesContainer = () => {
         placeholder="Введите название репозитория"
       />
       <ListWrapper
+        emptyMessage={inputValue.length > 0 ? "Ничего не найдено" : null}
         isLoading={loading || isTyping}
         data={data?.search.nodes || []}
       />

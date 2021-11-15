@@ -10,9 +10,11 @@ const SpinWrapper = styled.div`
 
 const ListWrapper = ({
   data,
+  emptyMessage = null,
   isLoading,
 }: {
   data: Array<Repository>;
+  emptyMessage?: string | null;
   isLoading: boolean;
 }) => {
   if (isLoading) {
@@ -24,7 +26,7 @@ const ListWrapper = ({
   }
 
   if (data.length === 0) {
-    return null;
+    return <>{emptyMessage}</>;
   }
 
   return (
