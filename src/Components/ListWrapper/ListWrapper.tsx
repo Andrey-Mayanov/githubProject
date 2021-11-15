@@ -67,7 +67,10 @@ const ListWrapper = ({
               />,
             ]}
           >
-            <List.Item.Meta title={item.name} description={item.description} />
+            <List.Item.Meta
+              title={`${item.owner.login}/${item.name}`}
+              description={item.description}
+            />
           </List.Item>
         )}
       />

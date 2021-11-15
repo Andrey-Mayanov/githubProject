@@ -29,6 +29,9 @@ export const GET_REPOSITORIES_BY_NAME = gql`
           name
           description
           stargazerCount
+          owner {
+            login
+          }
         }
       }
     }
