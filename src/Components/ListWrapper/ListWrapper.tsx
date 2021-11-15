@@ -1,9 +1,9 @@
 import React from "react";
 import styled from "styled-components";
-import { Button, List, Space, Spin } from "antd";
+import { List, Space, Spin } from "antd";
 import { Repository } from "types/repository";
 import { Scalars } from "types/repository";
-import { LeftOutlined, RightOutlined, StarOutlined } from "@ant-design/icons";
+import { StarOutlined } from "@ant-design/icons";
 
 const SpinWrapper = styled.div`
   display: flex;
@@ -34,15 +34,11 @@ const ListWrapper = ({
   emptyMessage = null,
   isLoading,
   addStar,
-  nextPage,
-  previousPage,
 }: {
   data: Array<Repository>;
   emptyMessage?: string | null;
   isLoading: boolean;
   addStar: (id: Scalars["ID"]) => void;
-  nextPage: () => void;
-  previousPage: () => void;
 }) => {
   if (isLoading) {
     return (
@@ -58,16 +54,6 @@ const ListWrapper = ({
 
   return (
     <>
-      <Space>
-        <Button onClick={() => previousPage()} type="primary">
-          <LeftOutlined />
-          Previous
-        </Button>
-        <Button onClick={() => nextPage()} type="primary">
-          Next
-          <RightOutlined />
-        </Button>
-      </Space>
       <List
         itemLayout="vertical"
         dataSource={data}

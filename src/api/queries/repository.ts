@@ -19,6 +19,7 @@ export const GET_REPOSITORIES_BY_NAME = gql`
       pageInfo {
         startCursor
         hasNextPage
+        hasPreviousPage
         endCursor
       }
       repositoryCount
