@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { GET_REPOSITORIES_BY_NAME, ADD_STAR } from "api/queries/repository";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import ListWrapper from "components/ListWrapper";
@@ -29,29 +29,33 @@ const RepositoriesContainer = () => {
       fetchPolicy: "no-cache",
     }
   );
-  const getRepositoriesByOptions = ({
-    query,
-    first,
-    last,
-    before,
-    after,
-  }: {
-    query: string;
-    first?: number;
-    last?: number;
-    before?: string;
-    after?: string;
-  }) => {
-    getRepositories({
-      variables: {
-        query,
-        first,
-        last,
-        before,
-        after,
-      },
-    });
-  };
+
+  const getRepositoriesByOptions = useCallback(
+    ({
+      query,
+      first,
+      last,
+      before,
+      after,
+    }: {
+      query: string;
+      first?: number;
+      last?: number;
+      before?: string;
+      after?: string;
+    }) => {
+      getRepositories({
+        variables: {
+          query,
+          first,
+          last,
+          before,
+          after,
+        },
+      });
+    },
+    [getRepositories]
+  );
 
   const [addStarMutation, { loading: isMutationLoading }] =
     useMutation(ADD_STAR);
@@ -79,7 +83,7 @@ const RepositoriesContainer = () => {
       });
     }
     setIsTyping(false);
-  }, [debouncedInputValue, getRepositories]);
+  }, [debouncedInputValue, getRepositoriesByOptions]);
 
   const previousPage = () => {
     getRepositoriesByOptions({
