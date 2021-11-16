@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { List, Space, Spin } from "antd";
-import { Repository } from "types/repository";
+import { Repository, RepositoryOwner } from "types/repository";
 import { Scalars } from "types/repository";
 import { StarOutlined } from "@ant-design/icons";
 
@@ -29,16 +29,21 @@ const IconText = ({
   </ClickbaleSpace>
 );
 
+type RepositoryPart = Pick<
+  Repository,
+  "id" | "name" | "description" | "stargazerCount"
+> & { owner: Pick<RepositoryOwner, "login"> };
+
 const ListWrapper = ({
   data,
   emptyMessage = null,
-  isLoading,
-  addStar,
+  isLoading = false,
+  addStar = () => {},
 }: {
-  data: Array<Repository>;
+  data: Array<RepositoryPart>;
   emptyMessage?: string | null;
-  isLoading: boolean;
-  addStar: (id: Scalars["ID"]) => void;
+  isLoading?: boolean;
+  addStar?: (id: Scalars["ID"]) => void;
 }) => {
   if (isLoading) {
     return (
