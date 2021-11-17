@@ -38,12 +38,12 @@ const ListWrapper = ({
   data,
   emptyMessage = null,
   isLoading = false,
-  addStar = () => {},
+  handleStarClick = () => {},
 }: {
   data: Array<RepositoryPart>;
   emptyMessage?: string | null;
   isLoading?: boolean;
-  addStar?: (id: Scalars["ID"]) => void;
+  handleStarClick?: (id: Scalars["ID"]) => void;
 }) => {
   if (isLoading) {
     return (
@@ -68,7 +68,7 @@ const ListWrapper = ({
               <IconText
                 icon={<StarOutlined />}
                 text={item.stargazerCount}
-                onClick={() => addStar(item.id)}
+                onClick={() => handleStarClick(item.id)}
               />,
             ]}
           >

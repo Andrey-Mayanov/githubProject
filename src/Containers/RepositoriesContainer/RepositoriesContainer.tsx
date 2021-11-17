@@ -56,7 +56,7 @@ const RepositoriesContainer = () => {
 
   const [addStarMutation] = useMutation(ADD_STAR);
 
-  const addStar = (id: Scalars["ID"]) =>
+  const handleStarClick = (id: Scalars["ID"]) =>
     addStarMutation({ variables: { starrableId: id } });
 
   const debouncedInputValue = useDebounce(inputValue, 1000);
@@ -92,6 +92,9 @@ const RepositoriesContainer = () => {
     setInputValue(event.target.value);
   };
 
+  const isListLoading = loading || isTyping;
+  const listEmptyValue = inputValue.length > 0 ? "Ничего не найдено" : null;
+
   return (
     <StyledSpace direction="vertical">
       <Input
@@ -107,9 +110,9 @@ const RepositoriesContainer = () => {
         />
       </ToRightDiv>
       <ListWrapper
-        addStar={addStar}
-        emptyMessage={inputValue.length > 0 ? "Ничего не найдено" : null}
-        isLoading={loading || isTyping}
+        handleStarClick={handleStarClick}
+        emptyMessage={listEmptyValue}
+        isLoading={isListLoading}
         data={data?.search.nodes || []}
       />
     </StyledSpace>
