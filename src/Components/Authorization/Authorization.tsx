@@ -4,7 +4,7 @@ import { useLocation, Navigate } from "react-router-dom";
 const Authorization = () => {
   const [token, setToken] = useState(sessionStorage.getItem("token"));
   const [data, setData] = useState({ errorMessage: "", isLoading: false });
-  const search = useLocation().search;
+  const { search } = useLocation();
 
   useEffect(() => {
     const codeFromQueryString = new URLSearchParams(search).get("code");
@@ -37,7 +37,7 @@ const Authorization = () => {
   return (
     <a
       className="login-link"
-      href={`https://github.com/login/oauth/authorize?scope=user&client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}`}
+      href={`https://github.com/login/oauth/authorize?scope=public_repo%20user&client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}`}
       onClick={() => {
         setData({ ...data, errorMessage: "" });
       }}
