@@ -42,11 +42,8 @@ export const ADD_STAR = gql`
   mutation addStar($starrableId: ID!) {
     addStar(input: { starrableId: $starrableId }) {
       starrable {
-        stargazers(first: 3) {
-          nodes {
-            name
-          }
-        }
+        id
+        stargazerCount
       }
     }
   }

@@ -24,10 +24,7 @@ const RepositoriesContainer = () => {
   const [inputValue, setInputValue] = useState<string>("");
 
   const [getRepositories, { loading, data }] = useLazyQuery(
-    GET_REPOSITORIES_BY_NAME,
-    {
-      fetchPolicy: "no-cache",
-    }
+    GET_REPOSITORIES_BY_NAME
   );
 
   const getRepositoriesByOptions = useCallback(
@@ -57,21 +54,10 @@ const RepositoriesContainer = () => {
     [getRepositories]
   );
 
-  const [addStarMutation, { loading: isMutationLoading }] =
-    useMutation(ADD_STAR);
+  const [addStarMutation] = useMutation(ADD_STAR);
 
-  const addStar = (id: Scalars["ID"]) => {
-    addStarMutation({ variables: { starrableId: id } })
-      .then(() => {
-        getRepositoriesByOptions({
-          query: inputValue,
-          first: PAGE_SIZE,
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+  const addStar = (id: Scalars["ID"]) =>
+    addStarMutation({ variables: { starrableId: id } });
 
   const debouncedInputValue = useDebounce(inputValue, 1000);
 
@@ -101,27 +87,29 @@ const RepositoriesContainer = () => {
     });
   };
 
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsTyping(true);
+    setInputValue(event.target.value);
+  };
+
   return (
     <StyledSpace direction="vertical">
       <Input
-        onChange={(event) => {
-          setIsTyping(true);
-          setInputValue(event.target.value);
-        }}
+        onChange={handleInputChange}
         placeholder="Введите название репозитория"
       />
       <ToRightDiv>
         <SimplePagination
-          nextPage={() => nextPage()}
+          nextPage={nextPage}
           disableNext={!data?.search.pageInfo.hasNextPage}
           disablePrevious={!data?.search.pageInfo.hasPreviousPage}
-          previousPage={() => previousPage()}
+          previousPage={previousPage}
         />
       </ToRightDiv>
       <ListWrapper
-        addStar={(id: Scalars["ID"]) => addStar(id)}
+        addStar={addStar}
         emptyMessage={inputValue.length > 0 ? "Ничего не найдено" : null}
-        isLoading={loading || isTyping || isMutationLoading}
+        isLoading={loading || isTyping}
         data={data?.search.nodes || []}
       />
     </StyledSpace>
