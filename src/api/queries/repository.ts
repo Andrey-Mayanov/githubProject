@@ -22,13 +22,13 @@ export const GET_REPOSITORIES_BY_NAME = gql`
         hasPreviousPage
         endCursor
       }
-      repositoryCount
       nodes {
         ... on Repository {
           id
           name
           description
           stargazerCount
+          viewerHasStarred
           owner {
             login
           }
@@ -44,6 +44,19 @@ export const ADD_STAR = gql`
       starrable {
         id
         stargazerCount
+        viewerHasStarred
+      }
+    }
+  }
+`;
+
+export const REMOVE_STAR = gql`
+  mutation removeStar($starrableId: ID!) {
+    removeStar(input: { starrableId: $starrableId }) {
+      starrable {
+        id
+        stargazerCount
+        viewerHasStarred
       }
     }
   }

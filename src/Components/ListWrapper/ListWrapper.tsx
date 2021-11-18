@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { List, Space, Spin } from "antd";
-import { Repository, RepositoryOwner } from "types/repository";
+import { Repository, RepositoryOwner, Starrable } from "types/repository";
 import { Scalars } from "types/repository";
 import { StarOutlined } from "@ant-design/icons";
 
@@ -10,7 +10,8 @@ const SpinWrapper = styled.div`
   justify-content: center;
 `;
 
-const ClickbaleSpace = styled(Space)`
+const IconTextSpace = styled(Space)`
+  color: ${(props) => props.color};
   cursor: pointer;
 `;
 
@@ -18,21 +19,26 @@ const IconText = ({
   icon,
   text,
   onClick,
+  color,
 }: {
   icon: object;
   text: string | number;
   onClick: () => void;
+  color: string;
 }) => (
-  <ClickbaleSpace onClick={onClick}>
+  <IconTextSpace color={color} onClick={onClick}>
     {icon}
     {text}
-  </ClickbaleSpace>
+  </IconTextSpace>
 );
 
 type RepositoryPart = Pick<
   Repository,
   "id" | "name" | "description" | "stargazerCount"
-> & { owner: Pick<RepositoryOwner, "login"> };
+> & {
+  owner: Pick<RepositoryOwner, "login">;
+  viewerHasStarred: boolean;
+};
 
 const ListWrapper = ({
   data,
@@ -43,7 +49,7 @@ const ListWrapper = ({
   data: Array<RepositoryPart>;
   emptyMessage?: string | null;
   isLoading?: boolean;
-  handleStarClick?: (id: Scalars["ID"]) => void;
+  handleStarClick?: (id: Scalars["ID"], isStarred: boolean) => void;
 }) => {
   if (isLoading) {
     return (
@@ -68,7 +74,10 @@ const ListWrapper = ({
               <IconText
                 icon={<StarOutlined />}
                 text={item.stargazerCount}
-                onClick={() => handleStarClick(item.id)}
+                onClick={() => {
+                  return handleStarClick(item.id, item.viewerHasStarred);
+                }}
+                color={item.viewerHasStarred ? "#1890ff" : ""}
               />,
             ]}
           >

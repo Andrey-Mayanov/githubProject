@@ -29,7 +29,24 @@ app.post("/auth", (req, res) => {
     .then((response) => {
       let params = new URLSearchParams(response.data);
       const access_token = params.get("access_token");
-      return res.status(200).json(access_token);
+
+      return axios(`https://api.github.com/user`, {
+        headers: {
+          Authorization: `token ${access_token}`,
+        },
+      }).then((userResponse) => {
+        let params = new URLSearchParams(userResponse.data);
+        const name = params.get("name");
+
+        return {
+          name,
+          access_token,
+        };
+      });
+    })
+    .then((response) => {
+      console.log(response);
+      return res.status(200).json(response);
     })
     .catch((error) => {
       console.log(error);

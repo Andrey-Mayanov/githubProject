@@ -1,16 +1,44 @@
 import React from "react";
-import styled from "styled-components";
-import { routes } from "routes";
-import { useRoutes } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import RepositoriesContainer from "containers/RepositoriesContainer";
+import Authorization from "components/Authorization";
+import NoMatchRoute from "components/NoMatchRoute";
+import Layout from "page/Layout";
+import ProtectedPage from "page/ProtectedPage";
 
-const Content = styled.div`
-  padding: 1rem;
-`;
+const routes = [
+  {
+    path: "/",
+    isProtected: true,
+    Layout: Layout,
+    key: "repositories",
+    element: <RepositoriesContainer />,
+  },
+  {
+    path: "/auth",
+    key: "auth",
+    element: <Authorization />,
+  },
+  { path: "*", key: "noMatchRoute", element: <NoMatchRoute /> },
+];
 
 function App() {
-  let element = useRoutes(routes);
-
-  return <Content>{element}</Content>;
+  return (
+    <Routes>
+      {routes.map(({ Layout, element, key, path, isProtected }) => {
+        let elementWithWrappers = element;
+        if (Layout) {
+          elementWithWrappers = <Layout>{elementWithWrappers}</Layout>;
+        }
+        if (isProtected) {
+          elementWithWrappers = (
+            <ProtectedPage>{elementWithWrappers}</ProtectedPage>
+          );
+        }
+        return <Route key={key} path={path} element={elementWithWrappers} />;
+      })}
+    </Routes>
+  );
 }
 
 export default App;

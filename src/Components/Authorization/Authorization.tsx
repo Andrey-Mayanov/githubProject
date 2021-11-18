@@ -1,5 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, Navigate } from "react-router-dom";
+import { Typography } from 'antd';
+import styled from "styled-components";
+
+const { Title } = Typography;
+
+const AuthorizationWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid #d9d9d9;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: #d9d9d9;
+`;
 
 const Authorization = () => {
   const [token, setToken] = useState(sessionStorage.getItem("token"));
@@ -21,7 +39,8 @@ const Authorization = () => {
       })
         .then((response) => response.json())
         .then((data) => {
-          sessionStorage.setItem("token", data);
+          sessionStorage.setItem("token", data.access_token);
+          sessionStorage.setItem("userName", data.name);
           setToken(data);
         })
         .catch((error) => {
@@ -35,15 +54,26 @@ const Authorization = () => {
   }
 
   return (
-    <a
-      className="login-link"
-      href={`https://github.com/login/oauth/authorize?scope=public_repo%20user&client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}`}
-      onClick={() => {
-        setData({ ...data, errorMessage: "" });
-      }}
-    >
-      <span>Login with GitHub</span>
-    </a>
+    <AuthorizationWrapper>
+      <div>
+        <Title level={3}>Вы не авторизованы</Title>
+      </div>
+      <div>
+        <Title level={4}>Выберите способ авторизации:</Title>
+      </div>
+      <div>
+        <Title level={5}>
+          <a
+            href={`https://github.com/login/oauth/authorize?scope=public_repo%20user&client_id=${process.env.REACT_APP_CLIENT_ID}&redirect_uri=${process.env.REACT_APP_REDIRECT_URI}`}
+            onClick={() => {
+              setData({ ...data, errorMessage: "" });
+            }}
+          >
+            <span>GitHub</span>
+          </a>
+        </Title>
+      </div>
+    </AuthorizationWrapper>
   );
 };
 

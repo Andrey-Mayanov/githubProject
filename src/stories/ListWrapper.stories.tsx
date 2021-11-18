@@ -35,6 +35,7 @@ WithData.args = {
       name: "name",
       description: "description",
       stargazerCount: 0,
+      viewerHasStarred: true,
       owner: {
         login: "login",
       },

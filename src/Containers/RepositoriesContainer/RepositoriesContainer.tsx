@@ -1,5 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { GET_REPOSITORIES_BY_NAME, ADD_STAR } from "api/queries/repository";
+import {
+  GET_REPOSITORIES_BY_NAME,
+  ADD_STAR,
+  REMOVE_STAR,
+} from "api/queries/repository";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import ListWrapper from "components/ListWrapper";
 import { Input, Space } from "antd";
@@ -55,9 +59,15 @@ const RepositoriesContainer = () => {
   );
 
   const [addStarMutation] = useMutation(ADD_STAR);
+  const [removeStarMutation] = useMutation(REMOVE_STAR);
 
-  const handleStarClick = (id: Scalars["ID"]) =>
-    addStarMutation({ variables: { starrableId: id } });
+  const handleStarClick = (id: Scalars["ID"], isStarred: boolean) => {
+    if (isStarred) {
+      removeStarMutation({ variables: { starrableId: id } });
+    } else {
+      addStarMutation({ variables: { starrableId: id } });
+    }
+  };
 
   const debouncedInputValue = useDebounce(inputValue, 1000);
 
