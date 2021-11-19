@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, Navigate } from "react-router-dom";
-import { Typography } from 'antd';
+import { Typography } from "antd";
 import styled from "styled-components";
+import useAuth from "hooks/useAuth";
 
 const { Title } = Typography;
 
@@ -16,17 +17,17 @@ const AuthorizationWrapper = styled.div`
   border: 1px solid #d9d9d9;
   padding: 1rem;
   border-radius: 1rem;
-  background: #d9d9d9;
+  background: #f0f0f0;
 `;
 
 const Authorization = () => {
-  const [token, setToken] = useState(sessionStorage.getItem("token"));
+  const auth = useAuth();
   const [data, setData] = useState({ errorMessage: "", isLoading: false });
   const { search } = useLocation();
 
   useEffect(() => {
     const codeFromQueryString = new URLSearchParams(search).get("code");
-    if (codeFromQueryString) {
+    if (codeFromQueryString && !auth.user) {
       const requestData = {
         code: codeFromQueryString,
         clientId: process.env.REACT_APP_CLIENT_ID,
@@ -40,16 +41,15 @@ const Authorization = () => {
         .then((response) => response.json())
         .then((data) => {
           sessionStorage.setItem("token", data.access_token);
-          sessionStorage.setItem("userName", data.name);
-          setToken(data);
+          auth.setUser(data.user);
         })
         .catch((error) => {
           console.log(error);
         });
     }
-  }, [search]);
+  }, [search, auth]);
 
-  if (token) {
+  if (auth.user) {
     return <Navigate to="/" />;
   }
 

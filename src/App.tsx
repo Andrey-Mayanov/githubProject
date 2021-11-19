@@ -1,43 +1,56 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { Routes, Route } from "react-router-dom";
-import RepositoriesContainer from "containers/RepositoriesContainer";
 import Authorization from "components/Authorization";
 import NoMatchRoute from "components/NoMatchRoute";
 import Layout from "page/Layout";
 import ProtectedPage from "page/ProtectedPage";
+import AuthProvider from "contex/AuthProvider";
+import { Spin } from "antd";
+import styled from "styled-components";
 
-const routes = [
-  {
-    path: "/",
-    isProtected: true,
-    Layout: Layout,
-    key: "repositories",
-    element: <RepositoriesContainer />,
-  },
-  {
-    path: "/auth",
-    key: "auth",
-    element: <Authorization />,
-  },
-  { path: "*", key: "noMatchRoute", element: <NoMatchRoute /> },
-];
+// get users repositories - поиск
+
+// gQL suibscription (вам поставили звёздочку)
+
+// кодогенерация запросов - generate gQL hooks from gql
+
+const RepositoriesContainer = lazy(
+  () => import("containers/RepositoriesContainer")
+);
+const MyRepositoriesContainer = lazy(
+  () => import("containers/MyRepositoriesContainer")
+);
+
+const SpinWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+`;
 
 function App() {
   return (
-    <Routes>
-      {routes.map(({ Layout, element, key, path, isProtected }) => {
-        let elementWithWrappers = element;
-        if (Layout) {
-          elementWithWrappers = <Layout>{elementWithWrappers}</Layout>;
+    <AuthProvider>
+      <Suspense
+        fallback={
+          <SpinWrapper>
+            <Spin />
+          </SpinWrapper>
         }
-        if (isProtected) {
-          elementWithWrappers = (
-            <ProtectedPage>{elementWithWrappers}</ProtectedPage>
-          );
-        }
-        return <Route key={key} path={path} element={elementWithWrappers} />;
-      })}
-    </Routes>
+      >
+        <Routes>
+          <Route element={<Layout />}>
+            <Route element={<ProtectedPage />}>
+              <Route path="/" element={<RepositoriesContainer />} />
+              <Route
+                path="/my-repositories"
+                element={<MyRepositoriesContainer />}
+              />
+              <Route path="*" element={<NoMatchRoute />} />
+            </Route>
+          </Route>
+          <Route path="/auth" element={<Authorization />} />
+        </Routes>
+      </Suspense>
+    </AuthProvider>
   );
 }
 

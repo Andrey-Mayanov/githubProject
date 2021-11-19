@@ -35,11 +35,19 @@ app.post("/auth", (req, res) => {
           Authorization: `token ${access_token}`,
         },
       }).then((userResponse) => {
-        let params = new URLSearchParams(userResponse.data);
+        console.log(userResponse);
+
+        const params = new URLSearchParams(userResponse.data);
         const name = params.get("name");
+        const avatar_url = params.get("avatar_url");
+        const login = params.get("login");
 
         return {
-          name,
+          user: {
+            name,
+            avatar_url,
+            login,
+          },
           access_token,
         };
       });

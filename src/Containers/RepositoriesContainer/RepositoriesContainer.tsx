@@ -1,16 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
-import {
-  GET_REPOSITORIES_BY_NAME,
-  ADD_STAR,
-  REMOVE_STAR,
-} from "api/queries/repository";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { GET_REPOSITORIES_BY_NAME } from "api/queries/repository";
+import { useLazyQuery } from "@apollo/client";
 import ListWrapper from "components/ListWrapper";
 import { Input, Space } from "antd";
 import styled from "styled-components";
 import useDebounce from "hooks/useDebounce";
-import { Scalars } from "types/repository";
 import SimplePagination from "components/SimplePagination";
+import useRepositoriesHandlers from "hooks/useRepositoriesHandlers";
 
 const StyledSpace = styled(Space)`
   width: 100%;
@@ -24,6 +20,7 @@ const ToRightDiv = styled.div`
 const PAGE_SIZE = 10;
 
 const RepositoriesContainer = () => {
+  const { handleStarClick } = useRepositoriesHandlers();
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
 
@@ -57,17 +54,6 @@ const RepositoriesContainer = () => {
     },
     [getRepositories]
   );
-
-  const [addStarMutation] = useMutation(ADD_STAR);
-  const [removeStarMutation] = useMutation(REMOVE_STAR);
-
-  const handleStarClick = (id: Scalars["ID"], isStarred: boolean) => {
-    if (isStarred) {
-      removeStarMutation({ variables: { starrableId: id } });
-    } else {
-      addStarMutation({ variables: { starrableId: id } });
-    }
-  };
 
   const debouncedInputValue = useDebounce(inputValue, 1000);
 

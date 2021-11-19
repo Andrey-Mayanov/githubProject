@@ -1,6 +1,55 @@
 import { gql } from "@apollo/client";
 
+export const PAGE_INFO_FIELDS = gql`
+  fragment PageInfoFields on PageInfo {
+    startCursor
+    hasNextPage
+    hasPreviousPage
+    endCursor
+  }
+`;
+
+export const REPOSITORY_FIELDS = gql`
+  fragment RepositoryFields on Repository {
+    id
+    name
+    description
+    stargazerCount
+    viewerHasStarred
+  }
+`;
+
+export const GET_MY_REPOSITORIES = gql`
+  ${PAGE_INFO_FIELDS}
+  ${REPOSITORY_FIELDS}
+  query getMyRepositories(
+    $after: String
+    $before: String
+    $first: Int
+    $last: Int
+  ) {
+    viewer {
+      repositories(
+        affiliations: [OWNER]
+        after: $after
+        before: $before
+        first: $first
+        last: $last
+      ) {
+        pageInfo {
+          ...PageInfoFields
+        }
+        nodes {
+          ...RepositoryFields
+        }
+      }
+    }
+  }
+`;
+
 export const GET_REPOSITORIES_BY_NAME = gql`
+  ${PAGE_INFO_FIELDS}
+  ${REPOSITORY_FIELDS}
   query searchRepositories(
     $query: String!
     $after: String
@@ -17,18 +66,11 @@ export const GET_REPOSITORIES_BY_NAME = gql`
       last: $last
     ) {
       pageInfo {
-        startCursor
-        hasNextPage
-        hasPreviousPage
-        endCursor
+        ...PageInfoFields
       }
       nodes {
         ... on Repository {
-          id
-          name
-          description
-          stargazerCount
-          viewerHasStarred
+          ...RepositoryFields
           owner {
             login
           }

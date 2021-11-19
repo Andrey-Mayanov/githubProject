@@ -1,12 +1,11 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
-import { Layout as AntLayout, PageHeader } from "antd";
+import { Layout as AntLayout, Menu, Dropdown, Avatar } from "antd";
+import { DownOutlined, HomeOutlined } from "@ant-design/icons";
+import { Outlet, Link } from "react-router-dom";
+import useAuth from "hooks/useAuth";
 
 const { Header, Content } = AntLayout;
-
-type Props = {
-  children: JSX.Element;
-};
 
 const StyledContent = styled(Content)`
   padding: 1rem;
@@ -19,20 +18,58 @@ const StyledAntLayout = styled(AntLayout)`
 const StyledHeader = styled(Header)`
   background: #1890ff;
   color: #fff;
-`;
-
-const UserInfoDiv = styled.div`
   display: flex;
-  justify-content: end;
+  align-items: center;
+  justify-content: space-between;
 `;
 
-const Layout = ({ children }: Props) => {
+const HeaderALink = styled.a`
+  color: #fff;
+  line-height: initial;
+`;
+
+const HeaderLink = styled(Link)`
+  color: #fff;
+  line-height: initial;
+`;
+
+const StyledAvatar = styled(Avatar)`
+  margin-left: 5px;
+`;
+
+const menu = (setUser: Dispatch<SetStateAction<null>>) => (
+  <Menu>
+    <Menu.Item key="myRepo">
+      <Link to="/my-repositories">Мои репозитории</Link>
+    </Menu.Item>
+    <Menu.Item key="logout" danger onClick={() => setUser(null)}>
+      Выйти
+    </Menu.Item>
+  </Menu>
+);
+
+const Layout = () => {
+  const { setUser, user } = useAuth();
+  const { name = "", avatar_url = {} } = user || {};
+
   return (
     <StyledAntLayout>
       <StyledHeader>
-        <UserInfoDiv>{sessionStorage.getItem("userName")}</UserInfoDiv>
+        <HeaderLink to="/">
+          <HomeOutlined />
+        </HeaderLink>
+        <div>
+          <Dropdown overlay={menu(setUser)}>
+            <HeaderALink onClick={(e) => e.preventDefault()}>
+              {name} <DownOutlined />
+            </HeaderALink>
+          </Dropdown>
+          <StyledAvatar src={avatar_url} />
+        </div>
       </StyledHeader>
-      <StyledContent>{children}</StyledContent>
+      <StyledContent>
+        <Outlet />
+      </StyledContent>
     </StyledAntLayout>
   );
 };

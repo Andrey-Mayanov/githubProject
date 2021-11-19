@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { List, Space, Spin } from "antd";
-import { Repository, RepositoryOwner, Starrable } from "types/repository";
+import { Repository, RepositoryOwner } from "types/repository";
 import { Scalars } from "types/repository";
 import { StarOutlined } from "@ant-design/icons";
 
@@ -82,7 +82,11 @@ const ListWrapper = ({
             ]}
           >
             <List.Item.Meta
-              title={`${item.owner.login}/${item.name}`}
+              title={
+                item.owner?.login
+                  ? `${item.owner.login}/${item.name}`
+                  : item.name
+              }
               description={item.description}
             />
           </List.Item>

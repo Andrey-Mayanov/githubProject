@@ -1,16 +1,15 @@
+import useAuth from "hooks/useAuth";
 import React from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
-type Props = {
-  children: JSX.Element;
-};
+const ProtectedPage = () => {
+  const auth = useAuth();
 
-const ProtectedPage = ({ children }: Props) => {
-  if (!sessionStorage.getItem("token")) {
+  if (!auth.user) {
     return <Navigate to="/auth" />;
   }
 
-  return children;
+  return <Outlet />;
 };
 
 export default ProtectedPage;
