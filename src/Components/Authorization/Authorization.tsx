@@ -56,9 +56,6 @@ const Authorization = () => {
   return (
     <AuthorizationWrapper>
       <div>
-        <Title level={3}>Вы не авторизованы</Title>
-      </div>
-      <div>
         <Title level={4}>Выберите способ авторизации:</Title>
       </div>
       <div>

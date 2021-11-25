@@ -1,5 +1,5 @@
 generates:
-  ./src/types/repository.ts:
+  ./src/types/schemas.tsx:
     schema:
       - https://api.github.com/graphql:
           headers:
@@ -7,3 +7,32 @@ generates:
     documents: "src/api/**/*.ts"
     plugins:
       - typescript
+
+  ./src/types/operations.tsx:
+    schema:
+      - https://api.github.com/graphql:
+          headers:
+            Authorization: Bearer ${REACT_APP_GITHUB_PERSONAL_ACCESS_TOKEN}
+    documents: "src/api/**/*.ts"
+    preset: import-types
+    presetConfig:
+      typesPath: ./schemas
+    plugins:
+      - typescript-operations
+
+  ./src/types/hooks.tsx:
+    schema:
+      - https://api.github.com/graphql:
+          headers:
+            Authorization: Bearer ${REACT_APP_GITHUB_PERSONAL_ACCESS_TOKEN}
+    documents: "src/api/**/*.ts"
+    preset: import-types
+    presetConfig:
+      typesPath: ./operations
+    plugins:
+      - typescript-react-apollo
+    config:
+      # Optionals
+      withHOC: false
+      withComponent: false
+      withHooks: true

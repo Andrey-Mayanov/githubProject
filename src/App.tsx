@@ -7,10 +7,9 @@ import ProtectedPage from "page/ProtectedPage";
 import AuthProvider from "contex/AuthProvider";
 import { Spin } from "antd";
 import styled from "styled-components";
-
-// get users repositories - поиск
-
-// gQL suibscription (вам поставили звёздочку)
+import Todos from "containers/Todos";
+import MyIssues from "containers/MyIssues";
+import HomeContainer from "containers/HomeContainer";
 
 // кодогенерация запросов - generate gQL hooks from gql
 
@@ -24,6 +23,7 @@ const MyRepositoriesContainer = lazy(
 const SpinWrapper = styled.div`
   display: flex;
   justify-content: center;
+  padding: 1rem;
 `;
 
 function App() {
@@ -39,14 +39,17 @@ function App() {
         <Routes>
           <Route element={<Layout />}>
             <Route element={<ProtectedPage />}>
-              <Route path="/" element={<RepositoriesContainer />} />
+              <Route path="/" element={<HomeContainer />} />
+              <Route path="/repositories" element={<RepositoriesContainer />} />
               <Route
                 path="/my-repositories"
                 element={<MyRepositoriesContainer />}
               />
+              <Route path="/my-issues" element={<MyIssues />} />
               <Route path="*" element={<NoMatchRoute />} />
             </Route>
           </Route>
+          <Route path="/online" element={<Todos />} />
           <Route path="/auth" element={<Authorization />} />
         </Routes>
       </Suspense>

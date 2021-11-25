@@ -31,14 +31,8 @@ export const WithData = Template.bind({});
 WithData.args = {
   data: [
     {
-      id: "id",
-      name: "name",
+      title: "title",
       description: "description",
-      stargazerCount: 0,
-      viewerHasStarred: true,
-      owner: {
-        login: "login",
-      },
     },
   ],
 };

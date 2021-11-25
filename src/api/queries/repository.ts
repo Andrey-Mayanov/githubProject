@@ -19,28 +19,36 @@ export const REPOSITORY_FIELDS = gql`
   }
 `;
 
-export const GET_MY_REPOSITORIES = gql`
+export const GET_MY_ISSUE = gql`
   ${PAGE_INFO_FIELDS}
-  ${REPOSITORY_FIELDS}
-  query getMyRepositories(
+  query searchRepositories(
     $after: String
     $before: String
     $first: Int
     $last: Int
   ) {
-    viewer {
-      repositories(
-        affiliations: [OWNER]
-        after: $after
-        before: $before
-        first: $first
-        last: $last
-      ) {
-        pageInfo {
-          ...PageInfoFields
-        }
-        nodes {
-          ...RepositoryFields
+    search(
+      query: "author:Andrey-Mayanov"
+      type: ISSUE
+      after: $after
+      before: $before
+      first: $first
+      last: $last
+    ) {
+      pageInfo {
+        ...PageInfoFields
+      }
+      nodes {
+        ... on Issue {
+          id
+          title
+          body
+          closed
+          closedAt
+          url
+          comments {
+            totalCount
+          }
         }
       }
     }

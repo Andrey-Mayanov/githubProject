@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState, useMemo } from "react";
 import { GET_REPOSITORIES_BY_NAME } from "api/queries/repository";
 import { useLazyQuery } from "@apollo/client";
 import ListWrapper from "components/ListWrapper";
@@ -7,6 +7,9 @@ import styled from "styled-components";
 import useDebounce from "hooks/useDebounce";
 import SimplePagination from "components/SimplePagination";
 import useRepositoriesHandlers from "hooks/useRepositoriesHandlers";
+import { Repository, RepositoryOwner } from "types/repository";
+import IconText from "components/IconText";
+import { StarOutlined } from "@ant-design/icons";
 
 const StyledSpace = styled(Space)`
   width: 100%;
@@ -19,7 +22,21 @@ const ToRightDiv = styled.div`
 
 const PAGE_SIZE = 10;
 
-const RepositoriesContainer = () => {
+type RepositoryPart = Pick<
+  Repository,
+  "id" | "name" | "description" | "stargazerCount"
+> & {
+  owner: Pick<RepositoryOwner, "login">;
+  viewerHasStarred: boolean;
+};
+
+const RepositoriesContainer = ({
+  additionalToRequest = "",
+  allowEmptyInput = false,
+}: {
+  additionalToRequest?: string;
+  allowEmptyInput?: boolean;
+}) => {
   const { handleStarClick } = useRepositoriesHandlers();
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
@@ -44,7 +61,7 @@ const RepositoriesContainer = () => {
     }) => {
       getRepositories({
         variables: {
-          query,
+          query: `${query} ${additionalToRequest}`,
           first,
           last,
           before,
@@ -52,20 +69,20 @@ const RepositoriesContainer = () => {
         },
       });
     },
-    [getRepositories]
+    [getRepositories, additionalToRequest]
   );
 
   const debouncedInputValue = useDebounce(inputValue, 1000);
 
   useEffect(() => {
-    if (debouncedInputValue) {
+    if (allowEmptyInput || debouncedInputValue) {
       getRepositoriesByOptions({
         query: debouncedInputValue,
         first: PAGE_SIZE,
       });
     }
     setIsTyping(false);
-  }, [debouncedInputValue, getRepositoriesByOptions]);
+  }, [debouncedInputValue, allowEmptyInput, getRepositoriesByOptions]);
 
   const previousPage = () => {
     getRepositoriesByOptions({
@@ -91,6 +108,27 @@ const RepositoriesContainer = () => {
   const isListLoading = loading || isTyping;
   const listEmptyValue = inputValue.length > 0 ? "Ничего не найдено" : null;
 
+  const listData = useMemo(() => {
+    return (data?.search.nodes || []).map((item: RepositoryPart) => {
+      return {
+        description: item.description,
+        title: item.owner?.login
+          ? `${item.owner.login}/${item.name}`
+          : item.name,
+        actions: [
+          <IconText
+            icon={<StarOutlined />}
+            text={item.stargazerCount}
+            onClick={() => {
+              return handleStarClick(item.id, item.viewerHasStarred);
+            }}
+            color={item.viewerHasStarred ? "#1890ff" : ""}
+          />,
+        ],
+      };
+    });
+  }, [data, handleStarClick]);
+
   return (
     <StyledSpace direction="vertical">
       <Input
@@ -106,10 +144,9 @@ const RepositoriesContainer = () => {
         />
       </ToRightDiv>
       <ListWrapper
-        handleStarClick={handleStarClick}
         emptyMessage={listEmptyValue}
         isLoading={isListLoading}
-        data={data?.search.nodes || []}
+        data={listData}
       />
     </StyledSpace>
   );
